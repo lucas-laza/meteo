@@ -22,6 +22,8 @@ export class Place extends BaseEntity {
     place.name = name;
     place.latitude = latitude;
     place.longitude = longitude;
+    place.user_id = user_id;
+    place.is_favorite = is_favorite;
     await place.save()
     return place
   }
