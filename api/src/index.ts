@@ -3,10 +3,11 @@ import express, { response } from "express";
 import "reflect-metadata"
 import { DataSource } from "typeorm";
 import { Place } from "./Place";
+import { User } from "./User";
 const dataSource = new DataSource({
   type: "sqlite",
   database: "./sqlite.db",
-  entities: [Place],
+  entities: [Place, User],
   synchronize: true,
 
 });
@@ -37,6 +38,19 @@ async function main() {
       const coucou = weather.print(unit);
 
       return response.json(coucou);
+    } catch (error) {
+      console.error(error);
+      return response.status(500).json({ error: "Erreur serveur" });
+    }
+  });
+
+  server.get("/places", async (request, response) => {
+
+    try {
+  
+      const places = await Place.getALL();
+
+      return response.json(places);
     } catch (error) {
       console.error(error);
       return response.status(500).json({ error: "Erreur serveur" });
@@ -77,6 +91,34 @@ async function main() {
     
     return response.json({})
   })
+
+
+  // server.post("/user", async (request, response) => {
+
+  //   try {
+  //     const { name, email } = request.body;
+  
+  //     const user = User.createNew(name, email);
+
+  //     return response.json(user);
+  //   } catch (error) {
+  //     console.error(error);
+  //     return response.status(500).json({ error: "Erreur serveur" });
+  //   }
+  // });
+
+  server.get("/users", async (request, response) => {
+
+    try {
+  
+      const users = await User.getALL();
+
+      return response.json(users);
+    } catch (error) {
+      console.error(error);
+      return response.status(500).json({ error: "Erreur serveur" });
+    }
+  });
 }
 
 main();
