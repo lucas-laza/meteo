@@ -1,10 +1,22 @@
 import { Location } from "./Location";
 import { Weather } from "./Weather";
 import express from "express";
+import "reflect-metadata"
+import { DataSource } from "typeorm";
+import { Place } from "./Place";
+const dataSource = new DataSource({
+  type: "sqlite",
+  database: "./sqlite.db",
+  entities: [Place],
+  synchronize: true,
 
+});
 const PORT = 3700;
 
 async function main() {
+  await dataSource.initialize();
+  console.log("Successfuly connected");
+
   const server = express();
   server.use(express.json());
 
@@ -23,7 +35,6 @@ async function main() {
   
       const weather = new Weather(city);
       await weather.setCurrent();
-      
       const coucou = weather.print(unit);
 
       return response.json(coucou);
@@ -56,6 +67,11 @@ async function main() {
   server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
+
+  // test pour la bdd
+  //const paris = await Place.createNew("Paris",123, 1, 2)
+  //console.log(paris);
+
 }
 
 main();
