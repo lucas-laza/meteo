@@ -17,20 +17,28 @@ export class Place extends BaseEntity {
     @Column()
     is_favorite!: boolean;
 
-    static async createNew(name: string, latitude: number, longitude: number, user_id: number, is_favorite: boolean) {
-        const place = new Place();
-        place.name = name;
-        place.latitude = latitude;
-        place.longitude = longitude;
-        place.user_id = user_id;
-        place.is_favorite = is_favorite;
-        await place.save()
-        return place
+  static async createNew(name: string, latitude: number, longitude: number, user_id: number, is_favorite: boolean) {
+    const place = new Place();
+    place.name = name;
+    place.latitude = latitude;
+    place.longitude = longitude;
+    place.user_id = user_id;
+    place.is_favorite = is_favorite;
+    await place.save()
+    return place
+  }
+  static async getALL(){
+    return await this.find();
+  }
+  static async toggleFavorite(id: number): Promise<Place | null> {
+    const place = await this.findOne({ where: { id } });
+    if (place) {
+      place.is_favorite = !place.is_favorite;
+      await place.save();
+      return place;
     }
-    static async getALL() {
-        return await this.find();
-    }
-
+    return null;
+  }
 
     static async getLocationsFromText(text: string): Promise<SearchLocation[]> {
         dotenv.config();

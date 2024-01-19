@@ -131,6 +131,26 @@ async function main() {
       return response.status(500).json({ error: "Erreur serveur" });
     }
   });
+
+  server.put("/places/:id/toggle-favorite", async (request, response) => {
+    try {
+      const placeId = parseInt(request.params.id);
+      if (isNaN(placeId)) {
+        return response.status(400).json({ error: "L'ID doit être un nombre valide." });
+      }
+  
+      const updatedPlace = await Place.toggleFavorite(placeId);
+      if (!updatedPlace) {
+        return response.status(404).json({ error: "Emplacement non trouvé." });
+      }
+  
+      return response.json(updatedPlace);
+    } catch (error) {
+      console.error(error);
+      return response.status(500).json({ error: "Erreur serveur" });
+    }
+  });
+  
 }
 
 main();
