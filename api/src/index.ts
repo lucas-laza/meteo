@@ -77,6 +77,23 @@ async function main() {
     
     return response.json({})
   })
+
+  server.post("/places", async (request, response) => {
+    try {
+      const { name, latitude, longitude } = request.body;
+      
+      if (!name || latitude === undefined || longitude === undefined) {
+        return response.status(400).json({ error: "Les paramètres 'name', 'latitude' et 'longitude' sont nécessaires." });
+      }
+  
+      const newPlace = await Place.createNew(name, latitude, longitude);
+      return response.status(201).json(newPlace);
+    } catch (error) {
+      console.error(error);
+      return response.status(500).json({ error: "Erreur serveur" });
+    }
+  });
+
 }
 
 main();

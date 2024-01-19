@@ -15,14 +15,13 @@ export class Place extends BaseEntity {
     @Column({ nullable: true })
     longitude?: number;
 
-    static async createNew(name: string, latitude: number, longitude: number,geoCodeApiId:number) {
-        const place = new Place();
-        place.name = name;
-        // place.geoCodeApiId=geoCodeApiId;
-        place.latitude = latitude;
-        place.longitude = longitude;
-        await place.save()
-        return place
+    static async createNew(name: string, latitude: number, longitude: number) {
+      const place = new Place();
+      place.name = name;
+      place.latitude = latitude;
+      place.longitude = longitude;
+      await place.save();
+      return place;
     }
     // static getALL(){}
 
