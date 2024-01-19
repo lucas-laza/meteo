@@ -24,20 +24,9 @@ async function main() {
     return response.send("Hello world!");
   });
 
-  server.post("/weather", async (request, response) => {
-
+  server.get("/weather", async (request, response) => {
     try {
-      const { city, unit } = request.body;
-      
-      if (!city || !unit) {
-        return response.status(400).json({ error: "Les paramètres 'city' et 'unit' sont nécessaires." });
-      }
-  
-      const weather = new Weather(city);
-      await weather.setCurrent();
-      const coucou = weather.print(unit);
-
-      return response.json(coucou);
+      return response.json(await Weather.getCurrentWeatherForUserPlaces());
     } catch (error) {
       console.error(error);
       return response.status(500).json({ error: "Erreur serveur" });

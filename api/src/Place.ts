@@ -61,4 +61,17 @@ export class Place extends BaseEntity {
         throw error; 
       }
     }
+
+    static async getAllForCurrentUser(): Promise<any> {
+      dotenv.config();
+      const env_user_id = process.env.USER_ID;
+      if (env_user_id == undefined) {
+        throw new Error("User id is undefined");
+      }
+      const user_id = parseInt(env_user_id);
+
+      const places = this.findBy({user_id: user_id})
+
+      return places;
+    }
 }
