@@ -4,4 +4,4 @@ export type CoordinatesForCity = {
   longitude: number;
 };
 
-export type TemperatureUnit = "CELSIUS" | "FAHRENHEIT";
+export type TemperatureUnit = "C" | "F";

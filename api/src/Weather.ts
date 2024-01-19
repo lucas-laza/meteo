@@ -1,5 +1,6 @@
 import { CoordinatesForCity, TemperatureUnit } from "./types";
 import { WEATHER_CODES } from "./weather-codes";
+import fetch from 'node-fetch';
 
 const COORDINATES_FOR_CITIES: CoordinatesForCity[] = [
   { city: "Lille", latitude: 50.6365654, longitude: 3.0635282 },
@@ -20,6 +21,10 @@ export class Weather {
     this.city = city;
   }
 
+  /**
+   * Get current weather for this.city
+   * Define the class variables with the results
+   */
   async setCurrent(): Promise<void> {
     const coordinates = COORDINATES_FOR_CITIES.find(
       (_coordinates) => _coordinates.city === this.city
@@ -35,14 +40,19 @@ export class Weather {
     );
     const weather = (await weatherResponse.json()) as {
       current: { temperature_2m: number; weather_code: number };
-    };
+    };   
 
     this.temperatureCelsius = weather.current.temperature_2m;
-    this.weatherCode = weather.current.weather_code;
+    this.weatherCode = weather.current.weather_code;    
   }
 
-  print(temperatureUnit: TemperatureUnit = "CELSIUS"): string {
-    if (!this.temperatureCelsius || !this.weatherCode) {
+  /**
+   * Print weather information for the current city in a readable way
+   * @param temperatureUnit
+   * @returns 
+   */
+  print(temperatureUnit: TemperatureUnit = "C"): string {
+    if (this.temperatureCelsius === undefined || this.weatherCode === undefined) {
       throw new Error(
         `No weather data found for city ${this.city}: run \`setCurrent\` on Weather object.`
       );
@@ -52,13 +62,14 @@ export class Weather {
     const text: string = WEATHER_CODES[this.weatherCode].text;
 
     const temperature = Math.round(
-      temperatureUnit === "CELSIUS"
+      temperatureUnit === "C"
         ? this.temperatureCelsius
         : getTemperatureFahrenheit(this.temperatureCelsius)
     );
-    const shortTemperatureUnit = temperatureUnit === "CELSIUS" ? "C" : "F";
+    const shortTemperatureUnit = temperatureUnit === "C" ? "C" : "F";
 
-    return `${this.city} : ${temperature}°${shortTemperatureUnit} | ${icon} ${text}`
-    
+    return `${this.city} : ${temperature}°${shortTemperatureUnit} | ${icon} ${text}`;
   }
+
+ 
 }
