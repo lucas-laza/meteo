@@ -1,5 +1,5 @@
 import { Weather } from "./Weather";
-import express from "express";
+import express, { response } from "express";
 import "reflect-metadata"
 import { DataSource } from "typeorm";
 import { Place } from "./Place";
@@ -50,7 +50,15 @@ async function main() {
   // test pour la bdd
   //const paris = await Place.createNew("Paris",123, 1, 2)
   //console.log(paris);
-
+  server.get('/search/places', (request, response) => {
+    const query = request.query
+    console.log(query.place);
+    if (!query.name || Array.isArray(query.name)) {
+      return response.status(400).json({ error: "You must supply query param :'name' to search for places" })
+    }
+    
+    return response.json({})
+  })
 }
 
 main();
