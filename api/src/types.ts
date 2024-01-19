@@ -5,3 +5,12 @@ export type CoordinatesForCity = {
 };
 
 export type TemperatureUnit = "C" | "F";
+
+export type SearchLocation = {
+  "name": string,
+  "latitude": number,
+  "longitude": number
+  "country": string,
+  "population": number,
+  "is_capital": boolean
+}

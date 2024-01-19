@@ -1,4 +1,3 @@
-import { Location } from "./Location";
 import { Weather } from "./Weather";
 import express, { response } from "express";
 import "reflect-metadata"
@@ -44,7 +43,7 @@ async function main() {
     }
   });
 
-  server.get("/location/search", async (request, response) => {
+  server.get("/places/search", async (request, response) => {
 
     try {
       const { text } = request.body;
@@ -53,9 +52,7 @@ async function main() {
         return response.status(400).json({ error: "Le param text est requis" });
       }
   
-      const location = new Location();
-      
-      const coucou = await location.getLocationsFromText(text);
+      const coucou = await Place.getLocationsFromText(text);
 
       return response.json(coucou);
     } catch (error) {

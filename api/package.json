@@ -9,7 +9,8 @@
     "build:watch": "tsc -w",
     "start": "node dist",
     "start:watch": "nodemon dist",
-    "dev": "npm run build && (npm run build:watch & npm run start:watch)"
+    "dev": "npm run build && (npm run build:watch & npm run start:watch)",
+    "go": "npm run build && npm run start"
   },
   "keywords": [],
   "author": "",
