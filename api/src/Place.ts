@@ -30,7 +30,15 @@ export class Place extends BaseEntity {
   static async getALL(){
     return await this.find();
   }
-
+  static async toggleFavorite(id: number): Promise<Place | null> {
+    const place = await this.findOne({ where: { id } });
+    if (place) {
+      place.is_favorite = !place.is_favorite;
+      await place.save();
+      return place;
+    }
+    return null;
+  }
 
   static async getLocationsFromText(text: string): Promise<SearchLocation[]> {
       dotenv.config();
