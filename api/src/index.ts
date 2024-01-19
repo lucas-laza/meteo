@@ -57,6 +57,17 @@ async function main() {
     }
   });
 
+  server.delete("/places/:id", async (request, response) => {
+
+  console.log(request.params);
+  
+      const places = await Place.deleteOne(parseInt(request.params.id));
+  
+      return response.json(places);
+  
+     
+   
+  });
   server.get("/places/search", async (request, response) => {
 
     try {
