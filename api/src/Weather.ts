@@ -12,6 +12,7 @@ function getTemperatureFahrenheit(tempCelsius: number): number {
 export class Weather {
   place: Place;
   temperatureCelsius?: number;
+  temperatureFahrenheit?: number;
   weatherCode?: number;
 
   constructor(place: Place) {
@@ -32,6 +33,8 @@ export class Weather {
     };   
 
     this.temperatureCelsius = weather.current.temperature_2m;
+    this.temperatureFahrenheit = getTemperatureFahrenheit(weather.current.temperature_2m);
+
     this.weatherCode = weather.current.weather_code;   
     
     return this;
@@ -73,7 +76,6 @@ export class Weather {
       })
     );
   
-    console.log(result);
     return result;
   }
   
