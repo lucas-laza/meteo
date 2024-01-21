@@ -24,9 +24,18 @@ async function main() {
     return response.send("Hello world!");
   });
 
-  server.get("/weather", async (request, response) => {
+  server.get("/places/weather", async (request, response) => {
     try {
       return response.json(await Weather.getCurrentWeatherForUserPlaces());
+    } catch (error) {
+      console.error(error);
+      return response.status(500).json({ error: "Erreur serveur" });
+    }
+  });
+
+  server.get("/places/:id/forecast", async (request, response) => {
+    try {
+      return response.json(await Weather.getForecastWeatherForPlace(parseInt(request.params.id)));
     } catch (error) {
       console.error(error);
       return response.status(500).json({ error: "Erreur serveur" });
@@ -47,16 +56,11 @@ async function main() {
   });
 
   server.delete("/places/:id", async (request, response) => {
-
-  console.log(request.params);
-  
-      const places = await Place.deleteOne(parseInt(request.params.id));
-  
-      return response.json(places);
-  
-     
-   
+    const places = await Place.deleteOne(parseInt(request.params.id));
+    return response.json(places);
   });
+
+
   server.get("/places/search", async (request, response) => {
 
     try {

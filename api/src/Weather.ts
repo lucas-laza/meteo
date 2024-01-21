@@ -14,6 +14,20 @@ export class Weather {
   temperatureCelsius?: number;
   temperatureFahrenheit?: number;
   weatherCode?: number;
+  forecastHourly?: {
+    time: string;
+    temperatureCelsius: number;
+    temperatureFahrenheit: number;
+    weatherCode: number;
+  }[] = [];
+  forecastDaily?: {
+    time: string;
+    temperatureMaxCelsius: number;
+    temperatureMaxFahrenheit: number;
+    temperatureMinCelsius: number;
+    temperatureMinFahrenheit: number;
+    weatherCode: number;
+  }[] = [];
 
   constructor(place: Place) {
     this.place = place;
@@ -39,6 +53,46 @@ export class Weather {
     
     return this;
   }
+
+  async setForecast(): Promise<any> {
+
+    const hourlyResponse = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${this.place.latitude}&longitude=${this.place.longitude}&hourly=temperature_2m,weather_code&forecast_days=1`
+    );
+
+    const dailyResponse = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${this.place.latitude}&longitude=${this.place.longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min`
+    );
+
+    const weatherHourly = (await hourlyResponse.json()) as {
+      hourly: { time: string[]; temperature_2m: number[]; weather_code: number[] };
+    };
+    
+    const weatherDaily = (await dailyResponse.json()) as {
+      daily: { time: string[]; temperature_2m_max: number[]; temperature_2m_min: number[]; weather_code: number[] };
+    };
+
+    // Process hourly forecast
+    this.forecastHourly = weatherHourly.hourly.time.map((time, index) => ({
+      time,
+      temperatureCelsius: weatherHourly.hourly.temperature_2m[index],
+      temperatureFahrenheit: getTemperatureFahrenheit(weatherHourly.hourly.temperature_2m[index]),
+      weatherCode: weatherHourly.hourly.weather_code[index],
+    }));
+
+    // Process daily forecast
+    this.forecastDaily = weatherDaily.daily.time.map((time, index) => ({
+      time,
+      temperatureMaxCelsius: weatherDaily.daily.temperature_2m_max[index],
+      temperatureMaxFahrenheit: getTemperatureFahrenheit(weatherDaily.daily.temperature_2m_max[index]),
+      temperatureMinCelsius: weatherDaily.daily.temperature_2m_min[index],
+      temperatureMinFahrenheit: getTemperatureFahrenheit(weatherDaily.daily.temperature_2m_min[index]),
+      weatherCode: weatherDaily.daily.weather_code[index],
+    }));
+
+    return this;
+}
+
 
   // /**
   //  * Print weather information for the current city in a readable way
@@ -77,6 +131,15 @@ export class Weather {
     );
   
     return result;
+  }
+
+  static async getForecastWeatherForPlace(id: number): Promise<Weather> {
+    const place = await Place.getOnePlaceForCurrentUser(id);
+  
+    const weather = new Weather(place);
+    await weather.setForecast()
+  
+    return weather;
   }
   
  
