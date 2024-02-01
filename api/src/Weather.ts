@@ -142,5 +142,12 @@ export class Weather {
     return weather;
   }
   
+
+  static async getWeatherForPlace(id: number): Promise<Weather> {
+    const place = await Place.getOnePlaceForCurrentUser(id);
+    const weather = new Weather(place);
+    await weather.setCurrent()
+    return weather;
+  }
  
 }
