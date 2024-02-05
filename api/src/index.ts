@@ -42,6 +42,16 @@ async function main() {
     }
   });
 
+
+  server.get("/places/:id/weather", async (request, response) => {
+    try {
+      return response.json(await Weather.getWeatherForPlace(parseInt(request.params.id)));
+    } catch (error) {
+      console.error(error);
+      return response.status(500).json({ error: "Erreur serveur" });
+    }
+  });
+
   server.get("/places", async (request, response) => {
 
     try {
