@@ -3,7 +3,7 @@ import { WEATHER_CODES } from "./weather-codes";
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 import { Place } from "./Place";
-
+import { getWeatherIconAndDescription } from './weather-codes';
 
 function getTemperatureFahrenheit(tempCelsius: number): number {
   return (tempCelsius * 9) / 5 + 32;
@@ -14,6 +14,8 @@ export class Weather {
   temperatureCelsius?: number;
   temperatureFahrenheit?: number;
   weatherCode?: number;
+  weatherIconSVG?:string;
+  weatherDescription?:string;
   forecastHourly?: {
     time: string;
     temperatureCelsius: number;
@@ -50,7 +52,9 @@ export class Weather {
     this.temperatureFahrenheit = getTemperatureFahrenheit(weather.current.temperature_2m);
 
     this.weatherCode = weather.current.weather_code;   
-    
+    const { svg, description } = getWeatherIconAndDescription(this.weatherCode);
+    this.weatherIconSVG = svg;
+    this.weatherDescription = description;
     return this;
   }
 
@@ -73,22 +77,36 @@ export class Weather {
     };
 
     // Process hourly forecast
-    this.forecastHourly = weatherHourly.hourly.time.map((time, index) => ({
-      time,
-      temperatureCelsius: weatherHourly.hourly.temperature_2m[index],
-      temperatureFahrenheit: getTemperatureFahrenheit(weatherHourly.hourly.temperature_2m[index]),
-      weatherCode: weatherHourly.hourly.weather_code[index],
-    }));
+    this.forecastHourly = weatherHourly.hourly.time.map((time, index) => {
+      const weatherCode = weatherHourly.hourly.weather_code[index];
+      const { svg, description } = getWeatherIconAndDescription(weatherCode);
+  
+      return {
+        time,
+        temperatureCelsius: weatherHourly.hourly.temperature_2m[index],
+        temperatureFahrenheit: getTemperatureFahrenheit(weatherHourly.hourly.temperature_2m[index]),
+        weatherCode,
+        svg,
+        description,
+      };
+    });
 
     // Process daily forecast
-    this.forecastDaily = weatherDaily.daily.time.map((time, index) => ({
-      time,
-      temperatureMaxCelsius: weatherDaily.daily.temperature_2m_max[index],
-      temperatureMaxFahrenheit: getTemperatureFahrenheit(weatherDaily.daily.temperature_2m_max[index]),
-      temperatureMinCelsius: weatherDaily.daily.temperature_2m_min[index],
-      temperatureMinFahrenheit: getTemperatureFahrenheit(weatherDaily.daily.temperature_2m_min[index]),
-      weatherCode: weatherDaily.daily.weather_code[index],
-    }));
+    this.forecastDaily = weatherDaily.daily.time.map((time, index) => {
+      const weatherCode = weatherDaily.daily.weather_code[index];
+      const { svg, description } = getWeatherIconAndDescription(weatherCode);
+  
+      return {
+        time,
+        temperatureMaxCelsius: weatherDaily.daily.temperature_2m_max[index],
+        temperatureMaxFahrenheit: getTemperatureFahrenheit(weatherDaily.daily.temperature_2m_max[index]),
+        temperatureMinCelsius: weatherDaily.daily.temperature_2m_min[index],
+        temperatureMinFahrenheit: getTemperatureFahrenheit(weatherDaily.daily.temperature_2m_min[index]),
+        weatherCode,
+        svg,
+        description,
+      };
+    });
 
     return this;
 }
